@@ -69,13 +69,30 @@ class Trade():
 
         :return: The JSON response if the deletion was successful, None otherwise.
         """
-        url = "https://api-capital.backend-capital.com/api/v1/positions/{}".format(self.deal_id)
-        response = requests.delete(url)
+        
+        def get_deal_references(filename):
+            with open(filename, "r") as f:
+                data = json.load(f)
+
+            # Get all the deal references
+            deal_references = []
+            for position in data:
+                deal_references.append(position["deal_id"])
+
+                return deal_references
+        
+        url = "https://api-capital.backend-capital.com/api/v1/positions/{{}}".format(self.deal_id)
+        headers = {
+            "X-SECURITY-TOKEN": self.x_token,
+            "CST": self.cst,
+            
+        }
+        response = requests.delete(url,headers=headers)
 
         if response.status_code == 200:
             return response.json()
         else:
-            return None
+            return response.content
 
     def get_positions(self):
         """
