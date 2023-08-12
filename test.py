@@ -66,15 +66,15 @@
             
 #             for row in reader:
 #                  print(row)
-import json
-def get_deal_references(filename):
-    with open(filename, "r") as f:
-        data = json.load(f)
+# import json
+# def get_deal_references(filename):
+#     with open(filename, "r") as f:
+#         data = json.load(f)
 
-    # Get all the deal references
-    deal_references = []
-    for position in data:
-        deal_references.append(position["deal_id"])
+#     # Get all the deal references
+#     deal_references = []
+#     for position in data:
+#         deal_references.append(position["deal_id"])
 
-    return deal_references
-print(get_deal_references('deal_id.json'))
+#     return deal_references
+# print(get_deal_references('deal_id.json'))

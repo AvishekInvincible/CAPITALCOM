@@ -79,21 +79,26 @@ class Trade():
             for position in data:
                 deal_references.append(position["deal_id"])
 
-                return deal_references
-        
-        url = "https://api-capital.backend-capital.com/api/v1/positions/{{}}".format(self.deal_id)
-        headers = {
-            "X-SECURITY-TOKEN": self.x_token,
-            "CST": self.cst,
-            
-        }
-        response = requests.delete(url,headers=headers)
+            return deal_references
+        deals = get_deal_references('deal_id.json')
+        print(deals)
+        responses = []
+        for i in range(0,len(deals)):
+            url = "https://api-capital.backend-capital.com/api/v1/positions/{}".format(deals[i])
+            headers = {
+                "X-SECURITY-TOKEN": self.x_token,
+                "CST": self.cst,
+                
+            }
+            response = requests.delete(url,headers=headers)
 
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return response.content
-
+            if response.status_code == 200:
+                responses.append((response.json()))
+                return response.json()
+            else:
+                print(response.json())
+                return response.content
+        return responses
     def get_positions(self):
         """
         Retrieves the positions using the provided API credentials.
