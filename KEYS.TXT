@@ -4,12 +4,12 @@ import json
 import requests
 
 # Set your API key and CST
-api_key = "P7A0abF2IPCe0KEi"
+
 
 import asyncio
 import websockets
 url = 'https://api-capital.backend-capital.com'
-key = 'P7A0abF2IPCe0KEi'
+
 import requests
 
 
