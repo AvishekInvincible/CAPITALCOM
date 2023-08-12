@@ -1,0 +1,61 @@
+encryptionKey":"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1i2YRr8yBfC4KuCoZNHlzUQBjekvCJxPHCyz8ihpb31BMiGOc2wCnJ8ueLwByxv1mSksQD6+iiwqIGc76CwwCosZOyvHBpW4oRE3M9DrzQdgQm/S+PnryehQua5w8cIrYRnzWmBDmck4WHvBLnlQC15Kj50SRU9wfjDcjBNtXmdYt9I4tfPWJz3JjaRee8UG6IpcJRaXualoMOq18wTl1WHZnGHu/ee1JU3ffPATAK7lBCyaRsihiLgq6IeiGX/3w6wRLhDMTxEO9o9R1W1wZjP+kv9xoyx+E/14UuzEyk+t9yiAn50FNhprdh3iGOiE1LHEHFpS/BRs5BY0Oiz9TwIDAQAB"
+import websocket
+import json
+import requests
+
+# Set your API key and CST
+api_key = "P7A0abF2IPCe0KEi"
+
+import asyncio
+import websockets
+url = 'https://api-capital.backend-capital.com'
+key = 'P7A0abF2IPCe0KEi'
+import requests
+
+
+
+# Create the request headers
+payload = json.dumps({
+    'encryptedKey':False,
+  "identifier": "avisheksood01@gmail.com",
+  "password": "Chand@20054"
+})
+
+headers = {
+  'X-CAP-API-KEY': key,
+  'Content-Type': 'application/json'
+}
+
+# Make the request
+response = requests.post("{}/api/v1/session".format(url),  payload,headers=headers)
+X_TOKEN,CST= response.headers['X-SECURITY-TOKEN'],response.headers['CST']
+
+url = 'wss://api-streaming-capital.backend-capital.com/connect'
+async def connect_websocket():
+    # Establish WebSocket connection
+    async with websockets.connect('wss://api-streaming-capital.backend-capital.com/connect') as websocket:
+        # Send authentication and subscription message
+        subscribe_message = {
+            'destination': 'OHLCMarketData.subscribe',
+            'correlationId': '1',
+            'cst': CST,
+            'securityToken':X_TOKEN,
+            'payload': {
+               "epics": [
+            "EURUSD"
+        ],
+        "resolutions": [
+            "MINUTE"
+        ],
+        "type": "classic"
+            }
+        }
+        await websocket.send(json.dumps(subscribe_message))
+
+        # Listen for incoming messages
+        while True:
+            message = await websocket.recv()
+            # Process the received message as needed
+            print(message)
+
+asyncio.get_event_loop().run_until_complete(connect_websocket())
