@@ -60,9 +60,10 @@
 #                 print(message['payload']['h'])
             
 # asyncio.get_event_loop().run_until_complete(connect_websocket())
-import csv
-with open('subscribed.csv', 'r', newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
+# import csv
+# with open('subscribed.csv', 'r', newline='') as csvfile:
+#             reader = csv.reader(csvfile, delimiter=',')
             
-            for row in reader:
-                 print(row)
+#             for row in reader:
+#                  print(row)
+

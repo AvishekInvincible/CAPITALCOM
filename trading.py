@@ -4,18 +4,19 @@ import random
 import math
 from key import api_key
 class Trade():
-    def __init__(self,cst,x_token,market_id, side, quantity) :
+    def __init__(self,cst,x_token) :
         self.cst = cst
         self.x_token = x_token
         # self.url = 'https://api-capital.backend-capital.com/api/v1/positions'
         self.url = 'https://demo-api-capital.backend-capital.com/api/v1/positions'
-        self.market_id = market_id.upper()
-        self.side = side.upper()
-        self.quantity = quantity
+        
         self.deal_id = None
 
 
-    def create_position(self):
+    def create_position(self,market_id,side,quantity,stop=None,profit=None,):
+        self.market_id = market_id.upper()
+        self.side = side.upper()
+        self.quantity = quantity
         """
         Creates a position in the market.
 
@@ -27,6 +28,8 @@ class Trade():
             "direction": self.side,
             "epic": self.market_id,
             "size": self.quantity,
+            "stopLevel": stop,
+            "profitLevel": profit
             
         }
         headers = {
@@ -39,8 +42,20 @@ class Trade():
 
         if response.status_code == 200:
             self.deal_id = response.json()['dealReference']
-            xx = open('deal_id.txt','a')
-            # xx.write(self.market_id ,self.deal_id)
+            with open('deal_id.json', "r") as f:
+                data = json.load(f)
+
+            # Append the new position to the list
+            data.append({
+                "quantity": self.quantity,
+                "side": self.side,
+                "market_id": self.market_id,
+                "deal_id": self.deal_id,
+            })
+
+            # Write the updated list to the file
+            with open('deal_id.json', "w") as f:
+                json.dump(data, f)
             return response.json()
         
         else:
@@ -72,7 +87,7 @@ class Trade():
         """
         
         headers = {
-            "X-SECURITY-TOKEN": api_key,
+            "X-SECURITY-TOKEN": self.x_token,
             "CST": self.cst,
         }
 
