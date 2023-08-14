@@ -3,8 +3,8 @@ from authentication import Authentication
 from extra import CSV
 class Websocket():
     def __init__(self,cst,x_token):
-        # self.url = 'wss://api-streaming-capital.backend-capital.com/connect'
-        self.url  = 'wss://demo-api-capital.backend-capital.com/connect'
+        self.url = 'wss://api-streaming-capital.backend-capital.com/connect'
+        # self.url  = 'wss://demo-api-capital.backend-capital.com/connect'
         self.cst = cst
         self.x_token = x_token
         
@@ -118,6 +118,8 @@ class Websocket():
                 if 'destination' in message:
                     break
 
-        
+
+
+
                
         # asyncio.run(connect_websocket()) need to run this

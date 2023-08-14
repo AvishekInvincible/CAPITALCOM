@@ -4,7 +4,8 @@ class  Account():
     def __init__(self, cst, x_token):
         self.CST = cst
         self.X_TOKEN = x_token
-        self.url = 'https://api-capital.backend-capital.com/api/v1/accounts'
+        # self.url = 'https://api-capital.backend-capital.com/api/v1/accounts'
+        self.url = 'https://demo-api-capital.backend-capital.com/api/v1/accounts'
         self.response = self._get_response()
 
     def _get_response(self):
@@ -18,9 +19,7 @@ class  Account():
         profitLoss = parsed_data['accounts'][0]['balance']['profitLoss']
         balance = parsed_data['accounts'][0]['balance']['balance']
         return balance,available,profitLoss
-    def max_quantity(self,max,stock_price):
-        max_stock_quantity = max / stock_price
-        return round(max_stock_quantity,1) 
+   
     def check_tpsl(self,current_price, risk_appetite=0.6,target_price=None,stop_price=None):
         """Returns the target profit and stop loss"""
         
@@ -40,9 +39,8 @@ class  Account():
         balance = self.get_a_balance()
         print(balance[0])
         max_trade = round(balance[0] * 0.2,2)
-        print(max_trade)
-        quantity = self.max_quantity(max_trade,price)
-        return quantity
+        quantity = max_trade / price
+        return round(quantity,1) 
 
         
         

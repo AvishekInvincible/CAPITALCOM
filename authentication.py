@@ -9,8 +9,8 @@ class Authentication:
     def __init__(self):
         self.config = {
         "key": api_key,
-        # "url": "https://api-capital.backend-capital.com"
-        'url': 'https://demo-api-capital.backend-capital.com'
+        "url": "https://api-capital.backend-capital.com"
+        # 'url': 'https://demo-api-capital.backend-capital.com'
     }
     def CST_X(self):
         """Generate a CST-X token returns X_TOKEN , CST"""

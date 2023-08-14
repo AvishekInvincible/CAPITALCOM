@@ -78,3 +78,99 @@
 
 #     return deal_references
 # print(get_deal_references('deal_id.json'))
+import pygame
+from authentication import Authentication
+from account import Account
+from websocket import Websocket
+import asyncio
+import json
+import os,time
+from sentiment import Sentiment
+from trading import Trade
+import threading
+import queue
+from concurrent.futures import ThreadPoolExecutor 
+auth = Authentication()
+x_token,cst = auth.CST_X()
+web = Websocket(cst,x_token)
+from queue import Queue
+import os
+q = Queue()
+Buy = None
+Sell = None
+spread = None
+async def async_task():
+  global Buy, Sell, spread
+  while True:
+    
+    Buy, Sell, spread = await web.subscribemarket('GOLD')
+    q.put((Buy, Sell, spread))
+    # Do something with data
+    await asyncio.sleep(1)
+
+def init_pygame():
+  pygame.init()
+  screen = pygame.display.set_mode((800, 600))
+  
+  font = pygame.font.Font(None, 32)
+  # Pygame setup
+  
+  return screen, font
+
+def run_pygame(screen, font):
+  global Buy, Sell
+  run = True
+  while run:
+
+    if not q.empty():
+        Buy, Sell, Spread = q.get()
+        print(Buy, Sell, Spread)
+    buy_text = font.render(f'Buy: {Buy}', True, 'White')
+    sell_text = font.render(f'Sell: {Sell}', True, 'White')  
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        shutdown_event = asyncio.Event()
+
+        # Schedule the async task to stop
+        if loop.is_running():
+          # Schedule the async task to stop
+          shutdown_event.set()
+
+        # Wait for the async task to stop
+        shutdown_event.wait()
+        run = False
+        
+      # Pygame event handling
+    
+    # Pygame render loop
+    screen.fill((0,0,0))
+    screen.blit(buy_text, (10, 10))
+    screen.blit(sell_text, (10, 50))  
+    
+    pygame.display.update()
+    
+  pygame.quit()
+  shutdown_event.cancel()
+
+  
+  
+if __name__ == "__main__":
+
+
+  executor = ThreadPoolExecutor()
+  loop = asyncio.get_event_loop()
+  loop.set_default_executor(executor)
+  # Start asyncio task in thread
+  t = threading.Thread(target=lambda: asyncio.run(async_task()))
+  t.start()
+
+  screen , font = init_pygame()
+  run_pygame(screen, font)
+
+  # Wait for background thread to finish
+  t.join()
+
+  loop.stop()
+  loop.close()
+  pygame.quit()
+
