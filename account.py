@@ -13,32 +13,45 @@ class  Account():
         return requests.get(self.url, headers=headers)
         
     def get_a_balance(self):
-        data_str = self.response.content.decode("utf-8")
-        parsed_data = json.loads(data_str)
-        available = parsed_data['accounts'][0]['balance']['available']
-        profitLoss = parsed_data['accounts'][0]['balance']['profitLoss']
-        balance = parsed_data['accounts'][0]['balance']['balance']
+        import http.client
+
+        conn = http.client.HTTPSConnection("demo-api-capital.backend-capital.com")
+        payload = ''
+        headers = {
+        'X-SECURITY-TOKEN': self.X_TOKEN,
+        'CST': self.CST,}
+        conn.request("GET", "/api/v1/accounts", payload, headers)
+        res = conn.getresponse()
+        data = res.read().decode("utf-8")
+        data = json.loads(data)
+        available = data['accounts'][0]['balance']['available']
+        profitLoss = data['accounts'][0]['balance']['profitLoss']
+        balance = data['accounts'][0]['balance']['balance']
+        
         return balance,available,profitLoss
    
     def check_tpsl(self,current_price, risk_appetite=0.6,target_price=None,stop_price=None):
         """Returns the target profit and stop loss"""
-        
-        quantity = 1 
+        if target_price and stop_price != None:
 
-        stop_loss_percentage = 0.05
-        target_profit_percentage = stop_loss_percentage * 2 # Set to 2x stop loss percentage
+            quantity = 1 
 
-        stop_loss_price = current_price * (1 - stop_loss_percentage)
-        target_price = current_price * (1 + target_profit_percentage) 
-        target_profit_price = current_price + (target_price - current_price) / quantity
+            stop_loss_percentage = 0.05
+            target_profit_percentage = stop_loss_percentage * 2 # Set to 2x stop loss percentage
+
+            stop_loss_price = current_price * (1 - stop_loss_percentage)
+            target_price = current_price * (1 + target_profit_percentage) 
+            target_profit_price = current_price + (target_price - current_price) / quantity
+        else :
+            target_profit_price = target_price
+            stop_loss_price = stop_price
         return target_profit_price,stop_loss_price
 
 
     def risk(self,price):
         """Returns the max quantity to buy or sell based on the current price"""
         balance = self.get_a_balance()
-        print(balance[0])
-        max_trade = round(balance[0] * 0.2,2)
+        max_trade = round(balance[1] * 0.2,2)
         quantity = max_trade / price
         return round(quantity,1) 
 

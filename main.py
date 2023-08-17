@@ -17,6 +17,7 @@ x_token,cst = auth.CST_X()
 web = Websocket(cst,x_token)
 sent  = Sentiment(cst,x_token)
 trade = Trade(cst,x_token)
+account = Account(cst,x_token)
 # print(trade.create_position(market_id='GOLD',side='buy',quantity=5))
 
 stop_loss_distance = 2
@@ -28,12 +29,13 @@ stop_loss_distance = 2
 # print(sent.get_client_sentiment(['TSLA','AAPL']))
 # account = Account(cst,x_token)
 # print(account.Risk())
-# balance,available,profitLoss = account.get_a_balance()
+for i in range(0,100):
+    print(account.get_a_balance())
+
 # print(balance,available,profitLoss)
 # print(account.risk(240))
 # stock_price = 235
 # print(account.check_tpsl(stock_price))
-
 
 
 

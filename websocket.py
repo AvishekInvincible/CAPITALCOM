@@ -77,7 +77,7 @@ class Websocket():
                     Buy = data['payload']['bid']
                     Sell = data['payload']['ofr']
                     spread = round(abs(Buy - Sell),2)
-                    print('Buy: ', Buy, 'Offer: ', Sell , 'Spread: ', spread)
+                    # print('Buy: ', Buy, 'Offer: ', Sell , 'Spread: ', spread)
                     return Buy, Sell,spread
                 i+=1
                 
