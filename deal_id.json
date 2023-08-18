@@ -1,1 +1,1 @@
-[]
+[{"quantity": 1, "side": "BUY", "market_id": "AMC", "deal_id": "o_8dcc8d49-ac39-4238-8f95-e41b1db27b66"}, {"quantity": 1, "side": "SELL", "market_id": "AMC", "deal_id": "o_26f66d22-d897-4527-a18f-935c99de093f"}, {"quantity": 0.1, "side": "SELL", "market_id": "TSLA", "deal_id": "o_af972736-2f24-4e2a-99c2-402f577dab01"}, {"quantity": 0.1, "side": "SELL", "market_id": "GOLD", "deal_id": "o_9ef86a42-c75e-4fc7-b95a-4d52a69d0600"}]

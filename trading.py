@@ -7,8 +7,8 @@ class Trade():
     def __init__(self,cst,x_token) :
         self.cst = cst
         self.x_token = x_token
-        # self.url = 'https://api-capital.backend-capital.com/api/v1/positions'
-        self.url = 'https://demo-api-capital.backend-capital.com/api/v1/positions'
+        self.url = 'https://api-capital.backend-capital.com/api/v1/positions'
+        # self.url = 'https://demo-api-capital.backend-capital.com/api/v1/positions'
         
         self.deal_id = None
 
@@ -17,6 +17,7 @@ class Trade():
         self.market_id = market_id.upper()
         self.side = side.upper()
         self.quantity = quantity
+        
         """
         Creates a position in the market.
 
@@ -61,69 +62,59 @@ class Trade():
         else:
             return response.text
 
-    def get_deal_references(self,filename):
-            with open(filename, "r") as f:
-                data = json.load(f)
+    # def get_deal_references(self,filename):
+    #         with open(filename, "r") as f:
+    #             data = json.load(f)
 
-            # Get all the deal references
-            deal_references = []
-            for position in data:
-                deal_references.append(position["deal_id"])
+    #         # Get all the deal references
+    #         deal_references = []
+    #         for position in data:
+    #             deal_references.append(position["deal_id"])
 
-            return deal_references
+    #         return deal_references
+     
+    # def close_position(self):
+    #     """
+    #     Deletes the position associated with the current instance.
 
-    def close_position(self):
-        """
-        Deletes the position associated with the current instance.
-
-        :return: The JSON response if the deletion was successful, None otherwise.
-        """
+    #     :return: The JSON response if the deletion was successful, None otherwise.
+    #     """
         
-        
-        deals = self.get_deal_references('deal_id.json')
-        print(deals)
-        responses = []
-        for i in range(0,len(deals)):
-            url = "{}/{}".format(self.url,deals[i])
-            print(url)
-            print(deals[i])
-            headers = {
-                "X-SECURITY-TOKEN": self.x_token,
-                "CST": self.cst,
+    #     import requests
+
+    #     url = 'https://api-capital.backend-capital.com/api/v1/positions/o_15c1c961-b8c2-435e-a3a8-40ddea567b6d'
+
+    #     headers = {
+    #     "X-SECURITY-TOKEN": self.x_token,
+    #             "CST": self.cst,
+    #     }
+
+    #     response = requests.delete(url, headers=headers)
+
+    #     print(response.text ,response.content)
+        # deals = self.get_deal_references('deal_id.json')
+        # # print(deals)
+        # responses = []
+        # for i in range(0,len(deals)):
+
+        #     url = "{}/{}".format(self.url,deals[i])
+        #     print(url)
+        # # print(deals[i])
+        #     headers = {
+        #         "X-SECURITY-TOKEN": self.x_token,
+        #         "CST": self.cst,
                 
-            }
-            response = requests.delete(url,headers=headers)
+        #     }
+        #     response = requests.delete(url,headers=headers)
 
-            if response.status_code == 200:
-                responses.append((response.json()))
-                return response.json()
-            else:
-                return response.content
-        return responses
-    def get_positions(self):
-        """
-        Retrieves the positions using the provided API credentials.
-
-        Returns:
-            - If the response status code is 200, returns the response JSON.
-            - Otherwise, returns None.
-        """
-        deals = self.get_deal_references('deal_id.json')
-        positions = []
-        for i in range(0,len(deals)):
-            url = "{}/{}".format(self.url,deals[i])
-            headers = {
-                "X-SECURITY-TOKEN": self.x_token,
-                "CST": self.cst
-            }
-
-            response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            positions.append(response.json())
-            return response.json()
-        else:
-            return None
+        #     if response.status_code == 200:
+        #         responses.append((response.json()))
+        #         return response.json()
+        #     else:
+        #         print(response.content)
+        #         return response.content
+        # print(responses)
+        # return responses
 
 
 

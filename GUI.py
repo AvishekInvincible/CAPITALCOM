@@ -121,11 +121,17 @@ class GUI():
             if event.type == pygame.MOUSEBUTTONDOWN:
               if buy_rect.collidepoint(event.pos):
                 # quantity_def = self.account.risk(Buy)
-                # print(trade.create_position(market_id=self.stock,side='buy',quantity=quantity_))
+                if quantity_def <=0:
+                  pass
+                else:
+                  print(self.trade.create_position(market_id=self.stock,side='buy',quantity=1,stop=buy_stop_loss_price,profit=buy_target_profit_price))
                 print("Buy Clicked") 
               if sell_rect.collidepoint(event.pos):
                 # quantity_def = account.risk(Sell)
-                # print(trade.create_position(market_id=self.stock,side='sell',quantity=quantity_))
+                if quantity_def <=0:
+                  pass
+                else:
+                  print(self.trade.create_position(market_id=self.stock,side='sell',quantity=quantity_def,stop=sell_stop_loss_price,profit=sell_target_profit_price))
                 print("Sell Clicked") 
             if event.type == pygame.KEYDOWN:
       
@@ -133,6 +139,11 @@ class GUI():
                 print("Buy Clicked")
               if event.key == pygame.K_s:
                 print("Sell Clicked")
+              if event.key == pygame.K_q:
+                run = False
+              if event.key == pygame.K_KP_MULTIPLY:
+                self.trade.close_position()
+                print("Close Clicked")
 
           # Blit assets 
 
@@ -177,7 +188,7 @@ class GUI():
       loop.stop()
       loop.close()
       pygame.quit()
-R = GUI("GOLD")
+R = GUI("AMC")
 R.main_loop()
 
 
