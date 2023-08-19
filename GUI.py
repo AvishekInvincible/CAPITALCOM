@@ -19,12 +19,13 @@ spread = 1
 
 
 class GUI():
-    def __init__(self,Stock):
+    def __init__(self,Stock  = 'GOLD'):
         self.stock = Stock
         
         
         auth = Authentication()
         self.x_token,self.cst = auth.CST_X()
+
         self.sent  = Sentiment(self.cst,self.x_token)
         self.trade = Trade(self.cst,self.x_token)
         self.account = Account(self.cst,self.x_token)
@@ -63,7 +64,12 @@ class GUI():
         hw_accel = pygame.display.gl_get_attribute(pygame.GL_ACCELERATED_VISUAL)
 
         quantity_def = 0
-         
+        input_box = pygame.Rect(500, 500, 140, 50)
+        color_inactive = pygame.Color('white')
+        color_active = pygame.Color('blue')
+        color = color_inactive
+        active = False
+        text = ''
         run = True
         clock = pygame.time.Clock()
 
@@ -76,11 +82,14 @@ class GUI():
           balance,available,profitLoss = self.account.get_a_balance()
           if i %5 ==0:
             quantity_def = self.account.risk(Buy)
+          Long, Short = self.sent.get_client_sentiment([self.stock])
           quantity_ = font.render(f'Q: {quantity_def}', True, 'white')
           quantity_rect = quantity_.get_rect(topleft=(980, 250)) 
           font = pygame.font.Font("verdana-bold.ttf", 20) 
           sell_text = font.render(f'{Sell}', True, 'Red')
           buy_text = font.render(f'{Buy}', True, 'Green')
+          SHORT_SENT = font.render(f'Short: {Short}%', True, 'Red')
+          LONG_SENT = font.render(f'Long: {Long}%', True, 'Green')
 
           font = pygame.font.Font("arial.ttf", 20) 
           
@@ -121,32 +130,53 @@ class GUI():
             if event.type == pygame.MOUSEBUTTONDOWN:
               if buy_rect.collidepoint(event.pos):
                 # quantity_def = self.account.risk(Buy)
-                if quantity_def <=0:
+                if quantity_def ==0:
                   pass
                 else:
-                  print(self.trade.create_position(market_id=self.stock,side='buy',quantity=1,stop=buy_stop_loss_price,profit=buy_target_profit_price))
+                  print(self.trade.create_position(market_id=self.stock,side='buy',quantity=quantity_def,stop=buy_stop_loss_price,profit=buy_target_profit_price))
                 print("Buy Clicked") 
               if sell_rect.collidepoint(event.pos):
                 # quantity_def = account.risk(Sell)
-                if quantity_def <=0:
+                if quantity_def ==0:
                   pass
                 else:
                   print(self.trade.create_position(market_id=self.stock,side='sell',quantity=quantity_def,stop=sell_stop_loss_price,profit=sell_target_profit_price))
                 print("Sell Clicked") 
+              if input_box.collidepoint(event.pos):
+                active = not active
+              else:
+                  active = False
+              color = color_active if active else color_inactive
             if event.type == pygame.KEYDOWN:
       
-              if event.key == pygame.K_b:
+              if event.key == pygame.K_KP_1:
                 print("Buy Clicked")
-              if event.key == pygame.K_s:
+                print(self.trade.create_position(market_id=self.stock,side='buy',quantity=quantity_def,stop=sell_stop_loss_price,profit=sell_target_profit_price))
+              if event.key == pygame.K_KP_0:
                 print("Sell Clicked")
+                print(self.trade.create_position(market_id=self.stock,side='sell',quantity=quantity_def,stop=sell_stop_loss_price,profit=sell_target_profit_price))
               if event.key == pygame.K_q:
                 run = False
-              if event.key == pygame.K_KP_MULTIPLY:
-                self.trade.close_position()
-                print("Close Clicked")
+              if active:
+                if event.key == pygame.K_RETURN:
+                    self.stock = text.upper()
+                    font = pygame.font.Font("Colleged.ttf", 32)
+                    info_label = font.render("Asset: {}".format(self.stock), True, "white")
+                    text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    text = text[:-1]
+                else:
+                    text += event.unicode
+              
 
           # Blit assets 
+          pygame.draw.rect(screen, color, input_box)
+          txt_surface = pygame.font.Font(None, 50).render(text, True, 'white')
+          width = max(200, txt_surface.get_width()+10)
+          input_box.w = width
+          screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
 
+          pygame.display.flip()
           screen.blit(info_label, (470, 30))
           screen.blit(buy_image, buy_rect)
           screen.blit(sell_image, sell_rect)
@@ -161,8 +191,10 @@ class GUI():
           screen.blit(balance_text, (980, 8))
           screen.blit(sell_text,(1060, 110))
           screen.blit(buy_text,(890, 110))
+          screen.blit(SHORT_SENT, (1000, 600))
+          screen.blit(LONG_SENT,(800, 600))
 
-
+          
 
 
           pygame.display.update()
@@ -170,6 +202,8 @@ class GUI():
           i+=1
 
         pygame.quit()
+        os._exit(0)
+
         shutdown_event.cancel()
     def main_loop(self):
       executor = ThreadPoolExecutor()
@@ -188,8 +222,7 @@ class GUI():
       loop.stop()
       loop.close()
       pygame.quit()
-R = GUI("AMC")
-R.main_loop()
+
 
 
 

@@ -15,7 +15,7 @@ class  Account():
     def get_a_balance(self):
         import http.client
 
-        conn = http.client.HTTPSConnection("demo-api-capital.backend-capital.com")
+        conn = http.client.HTTPSConnection("api-capital.backend-capital.com")
         payload = ''
         headers = {
         'X-SECURITY-TOKEN': self.X_TOKEN,

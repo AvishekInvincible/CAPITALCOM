@@ -9,9 +9,8 @@ import json
 import os,time
 from sentiment import Sentiment
 from trading import Trade
-xx = []
-
-
+from GUI import GUI
+gui = GUI()
 auth = Authentication()
 x_token,cst = auth.CST_X()
 web = Websocket(cst,x_token)
@@ -20,8 +19,7 @@ trade = Trade(cst,x_token)
 account = Account(cst,x_token)
 
 
-
-stop_loss_distance = 2
+gui.main_loop()
 # trade = Trade(cst=cst,x_token=x_token,market_id='TSLA',side='buy',quantity=1)
 # print(trade.create_position())
 # print(trade.get_positions())

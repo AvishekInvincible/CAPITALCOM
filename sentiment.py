@@ -20,12 +20,12 @@ class Sentiment():
         response = requests.get(url, headers=headers, params=params)
         if response.status_code == 200:
             client_sentiments = json.loads(json.dumps(response.json()))["clientSentiments"]
-            print(client_sentiments)
+
             for i in client_sentiments:
                 ID = i["marketId"]
                 LONG = i["longPositionPercentage"]
                 SHORT = i["shortPositionPercentage"]
-                print(ID, LONG, SHORT)
+                return LONG,SHORT
                 # return ID, LONG, SHORT
 
         else:
