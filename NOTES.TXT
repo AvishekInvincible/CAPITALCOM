@@ -1,0 +1,3 @@
+Need a way to pull in the high low close data and use the function in test.py to find out the peaks and valletys and using that i could display it on the menu depending on the stock and 
+if check if i have the data for that asset if not i pull the data and provide the nearest peak and valley which later could be used as a stop loss or target profit based on the 
+rr ratio. not it is working but i can make it even better by using open and close(test it first)

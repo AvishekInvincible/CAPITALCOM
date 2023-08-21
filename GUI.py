@@ -10,6 +10,7 @@ from trading import Trade
 import threading
 import queue
 from concurrent.futures import ThreadPoolExecutor 
+
 from queue import Queue
 import os
 q = Queue()
@@ -19,7 +20,7 @@ spread = 1
 
 
 class GUI():
-    def __init__(self,Stock  = 'GOLD'):
+    def __init__(self,Stock  = 'TSLA'):
         self.stock = Stock
         
         
@@ -31,6 +32,7 @@ class GUI():
         self.account = Account(self.cst,self.x_token)
         self.web = Websocket(self.cst,self.x_token)
         self.queue = queue.Queue()
+
       
 
     async def async_task(self,):
@@ -48,6 +50,14 @@ class GUI():
         font = pygame.font.Font(None, 32)
         
         return screen, font
+    def levels(self):
+        xx = self.lev.main()
+        lower,upper= self.find_upper_and_lower_values(xx, Buy)
+        lower = round(lower,2)
+        upper = round(upper,2)
+        return lower,upper
+
+
     def run(self,screen,font,loop):
         global Buy, Sell
         font = pygame.font.Font("Colleged.ttf", 32)
@@ -74,15 +84,19 @@ class GUI():
         clock = pygame.time.Clock()
 
         i=0
+        changed = False
         while run:
           screen.fill((0,0,0))
           if not q.empty():
             Buy, Sell, Spread = q.get()
             # print(Buy, Sell, Spread)
           balance,available,profitLoss = self.account.get_a_balance()
-          if i %5 ==0:
+          if changed !=True:
             quantity_def = self.account.risk(Buy)
-          Long, Short = self.sent.get_client_sentiment([self.stock])
+          try:
+            Long, Short = self.sent.get_client_sentiment([self.stock])
+          except Exception as e:
+            print(e)
           quantity_ = font.render(f'Q: {quantity_def}', True, 'white')
           quantity_rect = quantity_.get_rect(topleft=(980, 250)) 
           font = pygame.font.Font("verdana-bold.ttf", 20) 
@@ -149,24 +163,30 @@ class GUI():
               color = color_active if active else color_inactive
             if event.type == pygame.KEYDOWN:
       
-              if event.key == pygame.K_KP_1:
+              if event.key == pygame.K_PLUS:
                 print("Buy Clicked")
                 print(self.trade.create_position(market_id=self.stock,side='buy',quantity=quantity_def,stop=sell_stop_loss_price,profit=sell_target_profit_price))
-              if event.key == pygame.K_KP_0:
+              if event.key == pygame.K_MINUS:
                 print("Sell Clicked")
                 print(self.trade.create_position(market_id=self.stock,side='sell',quantity=quantity_def,stop=sell_stop_loss_price,profit=sell_target_profit_price))
               if event.key == pygame.K_q:
                 run = False
               if active:
                 if event.key == pygame.K_RETURN:
-                    self.stock = text.upper()
-                    font = pygame.font.Font("Colleged.ttf", 32)
-                    info_label = font.render("Asset: {}".format(self.stock), True, "white")
-                    text = ''
+                    if text.isnumeric():
+                      quantity_def = int(text)
+                      changed = True
+                    else:
+                        changed = False
+                        self.stock = text.upper()
+                        font = pygame.font.Font("Colleged.ttf", 32)
+                        info_label = font.render("Asset: {}".format(self.stock), True, "white")
+                        text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
                 else:
                     text += event.unicode
+                    
               
 
           # Blit assets 
@@ -193,9 +213,7 @@ class GUI():
           screen.blit(buy_text,(890, 110))
           screen.blit(SHORT_SENT, (1000, 600))
           screen.blit(LONG_SENT,(800, 600))
-
           
-
 
           pygame.display.update()
           clock.tick(120)

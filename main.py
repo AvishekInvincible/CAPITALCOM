@@ -20,6 +20,7 @@ account = Account(cst,x_token)
 
 
 gui.main_loop()
+
 # trade = Trade(cst=cst,x_token=x_token,market_id='TSLA',side='buy',quantity=1)
 # print(trade.create_position())
 # print(trade.get_positions())

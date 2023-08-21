@@ -1,176 +1,163 @@
-# import websocket
-# import json
-# import requests
+# # import pandas as pd 
+# # import numpy as np
 
-# # Set your API key and CST
-# api_key = "P7A0abF2IPCe0KEi"
+# # data = pd.read_csv('TSLA.csv')
+# # data["Gradient"] = (data["Open"] - data["Close"]) / 2
 
-# import asyncio
-# import websockets
-# url = 'https://api-capital.backend-capital.com'
-# key = 'P7A0abF2IPCe0KEi'
-# import requests
+# # # Find the days where the gradient is zero
+# # flat_days = data[data["Gradient"] == 0]
+
+# # # Print the flat days
+# # print(flat_days)
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import numpy as np
+
+# # # Load the data from a CSV file (replace 'data.csv' with your file path)
+# # data = pd.read_csv('TSLA.csv')
+
+# # # Extract relevant columns
+# # dates = pd.to_datetime(data['Date'])
+# # highs = data['High']
+# # lows = data['Low']
+
+# # # Calculate gradients
+# # def calculate_gradients(data_series):
+# #     return np.gradient(data_series)
+
+# # gradient_highs = calculate_gradients(highs)
+# # gradient_lows = calculate_gradients(lows)
+
+# # # Set a threshold for the gradient to identify peaks and valleys
+# # gradient_threshold = 0.1  # Adjust this value as needed
+
+# # # Find the indices where gradient is near zero for peaks (positive gradient) and valleys (negative gradient)
+# # peak_indices = np.where(np.abs(gradient_highs) < gradient_threshold)[0]
+# # valley_indices = np.where(np.abs(gradient_lows) < gradient_threshold)[0]
+
+# # # Create DataFrames for peaks and valleys
+# # peak_data = pd.DataFrame({'Date': dates.iloc[peak_indices], 'High_Peak': highs.iloc[peak_indices]})
+# # valley_data = pd.DataFrame({'Date': dates.iloc[valley_indices], 'Low_Valley': lows.iloc[valley_indices]})
+
+# # # Merge peak and valley DataFrames on 'Date'
+# # peaks_and_valleys = pd.merge(peak_data, valley_data, on='Date', how='outer')
+
+# # # Save the peaks and valleys data to a CSV file
+# # peaks_and_valleys.to_csv('peaks_and_valleys.csv', index=False)
+
+# # print("Peaks and valleys data saved to 'peaks_and_valleys.csv'")
 
 
+# # Load the data from a CSV file
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
 
-# # Create the request headers
-# payload = json.dumps({
-#     'encryptedKey':False,
-#   "identifier": "avisheksood01@gmail.com",
-#   "password": "Chand@20054"
-# })
 
-# headers = {
-#   'X-CAP-API-KEY': key,
-#   'Content-Type': 'application/json'
-# }
+# # Load the data from a CSV file (replace 'data.csv' with your file path)
+# data = pd.read_csv('TSLA.csv')
 
-# # Make the request
-# response = requests.post("{}/api/v1/session".format(url),  payload,headers=headers)
-# X_TOKEN,CST= response.headers['X-SECURITY-TOKEN'],response.headers['CST']
 
-# url = 'wss://api-streaming-capital.backend-capital.com/connect'
-# async def connect_websocket():
-#     # Establish WebSocket connection
-#     async with websockets.connect('wss://api-streaming-capital.backend-capital.com/connect') as websocket:
-#         # Send authentication and subscription message
-#         subscribe_message = {
-#             'destination': 'OHLCMarketData.subscribe',
-#             'correlationId': '1',
-#             'cst': CST,
-#             'securityToken':X_TOKEN,
-#             'payload': {
-#                "epics": [
-#             "EURUSD"
-#         ],
-#         "resolutions": [
-#             "MINUTE"
-#         ],
-#         "type": "classic"
-#             }
-#         }
-#         await websocket.send(json.dumps(subscribe_message))
+# dates = pd.to_datetime(data['Date'])
+# highs = data['High']
+# lows = data['Low']
 
-#         # Listen for incoming messages
-#         for i in range(0,2):
-#             message = await websocket.recv()
-#             # Process the received message as needed
-#             message  = json.loads(message)
-#             if i >=1:
-#                 print(message['payload']['h'])
-            
-# asyncio.get_event_loop().run_until_complete(connect_websocket())
-# import csv
-# with open('subscribed.csv', 'r', newline='') as csvfile:
-#             reader = csv.reader(csvfile, delimiter=',')
-            
-#             for row in reader:
-#                  print(row)
-# import json
-# def get_deal_references(filename):
-#     with open(filename, "r") as f:
-#         data = json.load(f)
+# first_derivative_high = np.gradient(highs)
 
-#     # Get all the deal references
-#     deal_references = []
-#     for position in data:
-#         deal_references.append(position["deal_id"])
 
-#     return deal_references
-# print(get_deal_references('deal_id.json'))
-import pygame
-from authentication import Authentication
-from account import Account
-from websocket import Websocket
-import asyncio
-import json
-import os,time
-from sentiment import Sentiment
-from trading import Trade
-import threading
-import queue
-from concurrent.futures import ThreadPoolExecutor 
-auth = Authentication()
-x_token,cst = auth.CST_X()
-web = Websocket(cst,x_token)
-from queue import Queue
-import os
-q = Queue()
-Buy = None
-Sell = None
-spread = None
-async def async_task():
-  global Buy, Sell, spread
-  while True:
-    
-    Buy, Sell, spread = await web.subscribemarket('GOLD')
-    q.put((Buy, Sell, spread))
-    # Do something with data
-    await asyncio.sleep(1)
+# peak_indices = np.where((first_derivative_high[:-1] > 0) & (first_derivative_high[1:] < 0))[0] + 1
+# valley_indices = np.where((first_derivative_high[:-1] < 0) & (first_derivative_high[1:] > 0))[0] + 1
 
-def init_pygame():
-  pygame.init()
-  screen = pygame.display.set_mode((800, 600))
-  
-  font = pygame.font.Font(None, 32)
-  # Pygame setup
-  
-  return screen, font
+# # Create DataFrames for peaks and valleys
+# peaks_data = pd.DataFrame({'Date': dates[peak_indices], 'Type': 'Peak', 'Price': highs[peak_indices]})
+# valleys_data = pd.DataFrame({'Date': dates[valley_indices], 'Type': 'Valley', 'Price': lows[valley_indices]})
 
-def run_pygame(screen, font):
-  global Buy, Sell
-  run = True
-  while run:
+# # Combine peaks and valleys data into one DataFrame
+# peaks_valleys_data = pd.concat([peaks_data, valleys_data], ignore_index=True)
 
-    if not q.empty():
-        Buy, Sell, Spread = q.get()
-        print(Buy, Sell, Spread)
-    buy_text = font.render(f'Buy: {Buy}', True, 'White')
-    sell_text = font.render(f'Sell: {Sell}', True, 'White')  
-    for event in pygame.event.get():
-      if event.type == pygame.QUIT:
-        shutdown_event = asyncio.Event()
+# # Sort the combined data by date
+# peaks_valleys_data = peaks_valleys_data.sort_values(by='Date')
 
-        # Schedule the async task to stop
-        if loop.is_running():
-          # Schedule the async task to stop
-          shutdown_event.set()
+# # Format the dates as DD-MM-YYYY
+# peaks_valleys_data['Date'] = peaks_valleys_data['Date'].dt.strftime('%d-%m-%Y')
 
-        # Wait for the async task to stop
-        shutdown_event.wait()
-        run = False
-        
-      # Pygame event handling
-    
-    # Pygame render loop
-    screen.fill((0,0,0))
-    screen.blit(buy_text, (10, 10))
-    screen.blit(sell_text, (10, 50))  
-    
-    pygame.display.update()
-    
-  pygame.quit()
-  shutdown_event.cancel()
+# # Save peaks and valleys data to a CSV file
+# peaks_valleys_data.to_csv('peaks_valleys_derivative.csv', index=False)
 
-  
-  
+# # Plot the data and identified peaks/valleys
+# plt.figure(figsize=(10, 6))
+# plt.plot(dates, highs, label='Highs', color='blue')
+# plt.plot(dates, lows, label='Lows', color='red')
+# plt.scatter(dates[peak_indices], highs[peak_indices], color='purple', marker='^', label='Peaks')
+# plt.scatter(dates[valley_indices], lows[valley_indices], color='brown', marker='v', label='Valleys')
+# plt.xlabel('Date')
+# plt.ylabel('Price')
+# plt.title('Derivative Analysis and Peaks/Valleys')
+# plt.legend()
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+# import yfinance as yf
+
+# msft = yf.Ticker("MSFT")
+# data = yf.download('TSLA', start="2018-01-01", end="2023-08-21")
+
+# from Levels import Levels
+# lev = Levels('TSLA')
+# price = lev.main()
+# print(price)
+import cv2
+import pytesseract
+import numpy as np
+
+def calculate_total(image_path):
+  """
+  Calculates the total of the expression in the image.
+
+  Args:
+    image_path: The path to the image file.
+
+  Returns:
+    The total of the expression.
+  """
+
+  # Read the image.
+  image = cv2.imread(image_path)
+
+  # Preprocess the image.
+  image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)[1]
+  image = cv2.GaussianBlur(image, (5, 5), 0)
+
+  # Recognize the text.
+  text = pytesseract.image_to_string(image)
+
+  # Extract the numbers.
+  numbers = re.findall(r"\d+\.\d+", text)
+
+  # Identify the red and blue numbers.
+  red_numbers = []
+  blue_numbers = []
+  for number in numbers:
+    if number[0] == "-":
+      red_numbers.append(number[1:])
+    else:
+      blue_numbers.append(number)
+
+  # Perform the calculation.
+  total = 0
+  for number in blue_numbers:
+    total += float(number)
+  for number in red_numbers:
+    total -= float(number)
+
+  return total
+
+
 if __name__ == "__main__":
+  # Get the image path from the user.
+  image_path = 'Screenshot 2023-08-21 184610.png'
 
+  # Calculate the total.
+  total = calculate_total(image_path)
 
-  executor = ThreadPoolExecutor()
-  loop = asyncio.get_event_loop()
-  loop.set_default_executor(executor)
-  # Start asyncio task in thread
-  t = threading.Thread(target=lambda: asyncio.run(async_task()))
-  t.start()
-
-  screen , font = init_pygame()
-  run_pygame(screen, font)
-
-  # Wait for background thread to finish
-  t.join()
-
-  loop.stop()
-  loop.close()
-  pygame.quit()
-
+  print("The total is:", total)
